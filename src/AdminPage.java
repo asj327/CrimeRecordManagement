@@ -53,6 +53,7 @@ public class AdminPage {
             JLabel passLabel = new JLabel("Password:");
             passLabel.setBounds(50, 70, 100, 30);
             c.add(passLabel);
+;
 
             passText = new JPasswordField();
             passText.setBounds(150, 70, 170, 30);
