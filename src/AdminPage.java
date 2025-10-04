@@ -1,8 +1,11 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,102 +23,6 @@ public class AdminPage {
 
     // ====================================================================
     // 1. OFFICER LOGIN APPLICATION (Simulates the Officer's interface)
-    // ====================================================================
-
-    /**
-     * Inner class for the Officer Login Window (Officer UI).
-     */
-    static class LoginApp extends JFrame implements ActionListener {
-        private final JTextField userText;
-        private final JPasswordField passText;
-        private final JButton loginButton;
-        private final JLabel messageLabel;
-
-        public LoginApp() {
-            setTitle("CRMS Officer Login");
-            setBounds(400, 200, 400, 250);
-            setDefaultCloseOperation(DISPOSE_ON_CLOSE); // Close window on exit
-            setResizable(false);
-
-            Container c = getContentPane();
-            c.setLayout(null);
-            c.setBackground(new Color(240, 240, 240));
-
-            // Components setup (Username, Password, Button, Message)
-            JLabel userLabel = new JLabel("Username:");
-            userLabel.setBounds(50, 30, 100, 30);
-            c.add(userLabel);
-
-            userText = new JTextField();
-            userText.setBounds(150, 30, 170, 30);
-            c.add(userText);
-
-            JLabel passLabel = new JLabel("Password:");
-            passLabel.setBounds(50, 70, 100, 30);
-            c.add(passLabel);
-;
-
-            passText = new JPasswordField();
-            passText.setBounds(150, 70, 170, 30);
-            c.add(passText);
-
-            loginButton = new JButton("LOGIN");
-            loginButton.setBounds(150, 120, 100, 40);
-            loginButton.addActionListener(this);
-            c.add(loginButton);
-
-            messageLabel = new JLabel("");
-            messageLabel.setBounds(50, 170, 300, 30);
-            messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            c.add(messageLabel);
-
-            setVisible(true);
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (e.getSource() == loginButton) {
-                String username = userText.getText();
-                String password = new String(passText.getPassword());
-
-                if (authenticateUser(username, password)) {
-                    messageLabel.setText("LOGIN SUCCESSFUL! Access Granted.");
-                    messageLabel.setForeground(Color.BLUE);
-                } else {
-                    messageLabel.setText("Invalid Credentials or Access Revoked!");
-                    messageLabel.setForeground(Color.RED);
-                }
-            }
-        }
-
-        /**
-         * BACKEND: Checks credentials AND the admin-controlled 'is_active' status.
-         */
-        private boolean authenticateUser(String username, String password) {
-            // SQL checks: 1. username, 2. password, 3. is_active = TRUE (Admin's decision)
-            String sql = "SELECT * FROM users WHERE username = ? AND password = ? AND is_active = TRUE";
-
-            try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-                pstmt.setString(1, username);
-                pstmt.setString(2, password);
-
-                try (ResultSet rs = pstmt.executeQuery()) {
-                    return rs.next(); // True if a matching, active user is found
-                }
-            } catch (SQLException ex) {
-                System.err.println("Database Error during login attempt: " + ex.getMessage());
-                messageLabel.setText("Database connection failed!");
-                messageLabel.setForeground(Color.RED);
-                return false;
-            }
-        }
-    }
-
-
-    // ====================================================================
-    // 2. ADMIN CONTROL PANEL (Simulates the Admin's interface)
     // ====================================================================
 
     /**
@@ -144,8 +51,6 @@ public class AdminPage {
             add(scrollPane, BorderLayout.CENTER);
 
             loadOfficerList(); // Populate the list of officers
-
-            setVisible(true);
         }
 
         /**
@@ -281,9 +186,6 @@ public class AdminPage {
             JLabel prompt = new JLabel("Select Interface:");
             launchFrame.add(prompt);
 
-            JButton officerButton = new JButton("Officer Login");
-            officerButton.addActionListener(e -> new LoginApp());
-            launchFrame.add(officerButton);
 
             JButton adminButton = new JButton("Admin Panel");
             adminButton.addActionListener(e -> new AdminControlPanel());
