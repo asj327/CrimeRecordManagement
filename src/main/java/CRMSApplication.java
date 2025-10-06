@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.SwingConstants;
+import java.awt.event.*;
 
 /**
  * CRMSApplication is the main entry point for the GUI.
@@ -60,31 +62,78 @@ public class CRMSApplication {
         private final UserAuthenticator authenticator;
         private final JTextField userField;
         private final JPasswordField passField;
+        private final JButton loginButton;
+        private final JLabel messageLabel;
 
         public LoginApp(String dbUser, String dbPass) {
             // Initialize the secure authenticator with the database credentials
             this.authenticator = new UserAuthenticator(dbUser, dbPass);
 
-            setTitle("CRMS Login");
+            setTitle("Login Module");
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            setSize(400, 250);
+            setExtendedState(JFrame.MAXIMIZED_BOTH);
             setLocationRelativeTo(null);
-            setLayout(new GridLayout(4, 2, 10, 10));
 
-            // Initialize UI Components
-            userField = new JTextField(20);
-            passField = new JPasswordField(20);
-            JButton loginButton = new JButton("Login");
+            JPanel mainPanel = new JPanel(new GridBagLayout());
+            mainPanel.setBackground(new Color(173, 216, 230)); // light blue
+            add(mainPanel);
+
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(15, 15, 15, 15);
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+
+
+            JLabel heading = new JLabel("Welcome to Crime Record Management System", SwingConstants.CENTER);
+            heading.setFont(new Font("Segoe UI", Font.BOLD, 28));
+            heading.setForeground(new Color(0, 0, 128));
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.gridwidth = 2;
+            mainPanel.add(heading, gbc);
+
+            JLabel userLabel = new JLabel("Username:");
+            userLabel.setFont(new Font("Segoe UI", Font.PLAIN, 20));
+            userField = new JTextField(18);
+            userField.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+            gbc.gridwidth = 1;
+            gbc.gridy = 1;
+            gbc.gridx = 0;
+            mainPanel.add(userLabel, gbc);
+            gbc.gridx = 1;
+            mainPanel.add(userField, gbc);
+
+            // Password label & field
+            JLabel passLabel = new JLabel("Password:");
+            passLabel.setFont(new Font("Segoe UI", Font.PLAIN, 20));
+            passField = new JPasswordField(18);
+            passField.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+            gbc.gridy = 2;
+            gbc.gridx = 0;
+            mainPanel.add(passLabel, gbc);
+            gbc.gridx = 1;
+            mainPanel.add(passField, gbc);
+
+            loginButton = new JButton("Login");
+            loginButton.setFont(new Font("Segoe UI", Font.BOLD, 20));
+            loginButton.setBackground(new Color(0, 102, 204));
+            loginButton.setForeground(Color.WHITE);
+            loginButton.setFocusPainted(false);
+            gbc.gridy = 3;
+            gbc.gridx = 0;
+            gbc.gridwidth = 2;
+            mainPanel.add(loginButton, gbc);
+
+
+            messageLabel = new JLabel("", SwingConstants.CENTER);
+            messageLabel.setFont(new Font("Segoe UI", Font.ITALIC, 16));
+            messageLabel.setForeground(Color.RED);
+            gbc.gridy = 4;
+            mainPanel.add(messageLabel, gbc);
+
+
+
+
             loginButton.addActionListener(this);
-
-            // Add Components to the Frame
-            add(new JLabel("Username:"));
-            add(userField);
-            add(new JLabel("Password:"));
-            add(passField);
-            add(new JLabel()); // Empty space for layout
-            add(loginButton);
-
             setVisible(true);
         }
 
@@ -101,7 +150,7 @@ public class CRMSApplication {
                 JOptionPane.showMessageDialog(this, "Login Successful! Role: " + userData.getUserRole(), "Success", JOptionPane.INFORMATION_MESSAGE);
 
                 // Close login and open dashboard
-                new DashboardPanel(userData.getUsername(), userData.getUserRole());
+                DashboardRouter.routeToDashboard(userData.getUsername(), userData.getUserRole());
                 dispose();
             } else {
                 // FAILURE
@@ -110,28 +159,6 @@ public class CRMSApplication {
         }
     }
 
-    /**
-     * Temporary placeholder for the post-login dashboard.
-     */
-    private static class DashboardPanel extends JFrame {
-        public DashboardPanel(String username, String userRole) {
-            setTitle("CRMS Dashboard - " + userRole);
-            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            setSize(600, 400);
-            setLocationRelativeTo(null);
-            setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
 
-            JLabel welcomeLabel = new JLabel("Welcome, " + username + "!");
-            welcomeLabel.setFont(new Font("Arial", Font.BOLD, 18));
 
-            JLabel roleLabel = new JLabel("Access Level: " + userRole);
-            roleLabel.setFont(new Font("Arial", Font.ITALIC, 14));
-
-            add(welcomeLabel);
-            add(roleLabel);
-            add(new JLabel("This is your role-specific dashboard."));
-
-            setVisible(true);
-        }
-    }
 }
