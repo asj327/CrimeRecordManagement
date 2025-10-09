@@ -211,7 +211,7 @@ class CrimeEntryUI extends JFrame {
         // Description
         gbc.gridy = 5;
         gbc.gridx = 0;
-        mainPanel.add(new JLabel("Description:"), gbc);
+        mainPanel.add(new JLabel("Name:"), gbc);
         descriptionArea = new JTextArea(4, 20);
         descriptionArea.setLineWrap(true);
         descriptionArea.setWrapStyleWord(true);
@@ -289,7 +289,7 @@ class DisplayRecordsUI extends JFrame {
 
         // Table model
         DefaultTableModel model = new DefaultTableModel(
-                new String[]{"Case ID", "Crime Type", "Date", "Location", "Status"}, 0);
+                new String[]{"Case ID","Name", "Crime Type", "Date", "Location", "Status"}, 0);
         JTable table = new JTable(model);
         add(new JScrollPane(table), BorderLayout.CENTER);
 
@@ -302,10 +302,12 @@ class DisplayRecordsUI extends JFrame {
             for (CrimeRecord crime : records) {
                 model.addRow(new Object[]{
                         crime.getCaseId(),
+                        crime.getDescription(),
                         crime.getCrimeType(),
                         crime.getDate(),
                         crime.getLocation(),
-                        crime.getStatus()
+                        crime.getStatus(),
+
                 });
             }
 
