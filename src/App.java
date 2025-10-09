@@ -5,6 +5,8 @@ import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import javax.swing.table.DefaultTableModel;
+
 
 public class App {
     public static void main(String[] args) {
@@ -275,44 +277,46 @@ class CrimeEntryUI extends JFrame {
     }
 }
 
+
 class DisplayRecordsUI extends JFrame {
+
     public DisplayRecordsUI() {
-        setTitle("All Crime Records");
-        setSize(900, 600);
+        setTitle("Display Crime Records");
+        setSize(800, 400);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLayout(new BorderLayout());
 
-        JTextArea textArea = new JTextArea();
-        textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
-        textArea.setEditable(false);
+        // Table model
+        DefaultTableModel model = new DefaultTableModel(
+                new String[]{"Case ID", "Crime Type", "Date", "Location", "Status"}, 0);
+        JTable table = new JTable(model);
+        add(new JScrollPane(table), BorderLayout.CENTER);
 
-        CrimeRecordDAO dao = new CrimeRecordDAO();
-        List<CrimeRecord> records = dao.getAllCrimeRecords();
-        StringBuilder sb = new StringBuilder();
+        try {
 
-        if (records.isEmpty()) {
-            sb.append("No crime records found in the database.\n");
-        } else {
-            sb.append("CRIME RECORDS DATABASE\n");
-            sb.append("========================\n\n");
-            sb.append("Total Records: ").append(records.size()).append("\n\n");
+            CrimeRecordDAO dao = new CrimeRecordDAO();
+            List<CrimeRecord> records = dao.getAllCrimeRecords();
 
-            for (CrimeRecord record : records) {
-                sb.append("Case ID: ").append(record.getCaseId()).append("\n");
-                sb.append("Crime Type: ").append(record.getCrimeType()).append("\n");
-                sb.append("Location: ").append(record.getLocation()).append("\n");
-                sb.append("Date: ").append(record.getDate()).append("\n");
-                sb.append("Status: ").append(record.getStatus()).append("\n");
-                sb.append("Description: ").append(record.getDescription()).append("\n");
-                sb.append("----------------------------------------\n");
+            // Populate the table
+            for (CrimeRecord crime : records) {
+                model.addRow(new Object[]{
+                        crime.getCaseId(),
+                        crime.getCrimeType(),
+                        crime.getDate(),
+                        crime.getLocation(),
+                        crime.getStatus()
+                });
             }
-        }
 
-        textArea.setText(sb.toString());
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        add(scrollPane);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error fetching data!");
+        }
     }
 }
+
+
 
 class SearchRecordUI extends JFrame {
     public SearchRecordUI() {
