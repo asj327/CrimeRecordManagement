@@ -147,8 +147,7 @@ class DashboardUI extends JFrame {
 }
 
 class CrimeEntryUI extends JFrame {
-    private JTextField caseIdField, crimeTypeField, locationField, dateField;
-    private JTextArea descriptionArea;
+    private JTextField caseIdField, crimeTypeField, locationField, dateField,descriptionArea;
     private CrimeRecordDAO crimeDAO;
 
     public CrimeEntryUI() {
@@ -212,12 +211,9 @@ class CrimeEntryUI extends JFrame {
         gbc.gridy = 5;
         gbc.gridx = 0;
         mainPanel.add(new JLabel("Name:"), gbc);
-        descriptionArea = new JTextArea(4, 20);
-        descriptionArea.setLineWrap(true);
-        descriptionArea.setWrapStyleWord(true);
-        JScrollPane scrollPane = new JScrollPane(descriptionArea);
+        descriptionArea = new JTextField(20);
         gbc.gridx = 1;
-        mainPanel.add(scrollPane, gbc);
+        mainPanel.add(descriptionArea, gbc);
 
         // Buttons
         gbc.gridy = 6;
